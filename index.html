@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Creature Collector</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Creature Collector</h1>
+
+<div id="starterSelection">
+    <h2>Choose Your Starter</h2>
+
+    <button onclick="chooseStarter('Flaretail')">
+        Flaretail 🔥
+    </button>
+
+    <button onclick="chooseStarter('Aquafang')">
+        Aquafang 🌊
+    </button>
+
+    <button onclick="chooseStarter('Leafhorn')">
+        Leafhorn 🌿
+    </button>
+</div>
+
+<div id="game" style="display:none;">
+
+    <h2>Coins: <span id="coins">100</span></h2>
+
+    <button onclick="openPack()">
+        Open Pack (10 Coins)
+    </button>
+
+    <button onclick="goSafari()">
+        Safari Zone
+    </button>
+
+    <button onclick="showCollection()">
+        Collection
+    </button>
+
+    <div id="output"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
