@@ -1,47 +1,70 @@
 const creatures = [
 
 {
-name: "Flaretail",
-rarity: "Starter"
+    name: "Flaretail",
+    type: "Flame",
+    hp: 60,
+    attack: 12,
+    rarity: "Starter"
 },
 
 {
-name: "Aquafang",
-rarity: "Starter"
+    name: "Aquafang",
+    type: "Tide",
+    hp: 65,
+    attack: 10,
+    rarity: "Starter"
 },
 
 {
-name: "Leafhorn",
-rarity: "Starter"
+    name: "Leafhorn",
+    type: "Grove",
+    hp: 70,
+    attack: 9,
+    rarity: "Starter"
 },
 
 {
-name: "Sparkit",
-rarity: "Common"
+    name: "Sparkit",
+    type: "Storm",
+    hp: 40,
+    attack: 11,
+    rarity: "Common"
 },
 
 {
-name: "Mosshell",
-rarity: "Common"
+    name: "Mosshell",
+    type: "Grove",
+    hp: 55,
+    attack: 8,
+    rarity: "Common"
 },
 
 {
-name: "Pebbite",
-rarity: "Common"
+    name: "Pebbite",
+    type: "Stone",
+    hp: 60,
+    attack: 7,
+    rarity: "Common"
 },
 
 {
-name: "Thunderclaw",
-rarity: "Rare"
+    name: "Thunderclaw",
+    type: "Storm",
+    hp: 75,
+    attack: 14,
+    rarity: "Rare"
 },
 
 {
-name: "Crystalback",
-rarity: "Rare"
+    name: "Crystalback",
+    type: "Stone",
+    hp: 90,
+    attack: 10,
+    rarity: "Rare"
 }
 
 ];
-
 let gameData = {
 
 starter: null,
@@ -51,7 +74,8 @@ coins: 100,
 unlocked: [],
 
 collection: []
-
+let playerCreature = null;
+let currentEnemy = null;
 };
 
 loadGame();
@@ -64,6 +88,15 @@ function chooseStarter(name)
 
     gameData.collection.push(name);
 
+    playerCreature =
+    JSON.parse(
+        JSON.stringify(
+            creatures.find(
+                c => c.name === name
+            )
+        )
+    );
+
     document.getElementById(
         "starterSelection"
     ).style.display = "none";
@@ -71,6 +104,8 @@ function chooseStarter(name)
     document.getElementById(
         "game"
     ).style.display = "block";
+
+    updateCoins();
 
     saveGame();
 }
@@ -133,13 +168,41 @@ function openPack()
         )
     );
 
-    const pull =
-    available[
-        Math.floor(
-            Math.random()
-            * available.length
-        )
-    ];
+let rarity;
+
+const roll =
+Math.random() * 100;
+
+if(roll < 70)
+{
+    rarity = "Common";
+}
+else if(roll < 95)
+{
+    rarity = "Rare";
+}
+else
+{
+    rarity = "Starter";
+}
+
+let pool =
+available.filter(
+c => c.rarity === rarity
+);
+
+if(pool.length === 0)
+{
+    pool = available;
+}
+
+const pull =
+pool[
+Math.floor(
+Math.random()
+* pool.length
+)
+];
 
     gameData.collection.push(
         pull.name
@@ -161,37 +224,161 @@ function goSafari()
     const safariPool = [
 
     "Sparkit",
-
     "Mosshell",
-
     "Pebbite",
-
     "Thunderclaw",
-
     "Crystalback"
 
     ];
 
-    const wild =
+    const enemyName =
     safariPool[
         Math.floor(
             Math.random()
             * safariPool.length
         )
     ];
+function showBattle()
+{
 
-    document.getElementById(
-        "output"
-    ).innerHTML =
-    `
-    <h2>Wild ${wild} appeared!</h2>
+function attack()
+{
+currentEnemy.hp -=
+playerCreature.attack;
 
-    <button onclick="fight('${wild}')">
-    Attack
-    </button>
-    `;
+if(currentEnemy.hp <= 0)
+{
+victory();
+return;
 }
 
+playerCreature.hp -=
+currentEnemy.attack;
+
+if(playerCreature.hp <= 0)
+{
+defeat();
+return;
+}
+
+showBattle();
+}
+
+function victory()
+{
+gameData.coins += 25;
+
+if(
+!gameData.unlocked.includes(
+currentEnemy.name
+))
+{
+gameData.unlocked.push(
+currentEnemy.name
+);
+}
+
+document.getElementById(
+"output"
+).innerHTML =
+
+`
+<h2>
+Victory!
+</h2>
+
+<p>
+${currentEnemy.name}
+unlocked for packs.
+</p>
+
+<p>
++25 Coins
+</p>
+`;
+
+playerCreature =
+JSON.parse(
+JSON.stringify(
+creatures.find(
+c =>
+c.name ===
+gameData.starter
+)
+)
+);
+
+updateCoins();
+
+saveGame();
+}
+
+function defeat()
+{
+document.getElementById(
+"output"
+).innerHTML =
+
+`
+<h2>
+Defeat...
+</h2>
+
+<p>
+Your starter recovered.
+</p>
+`;
+
+playerCreature =
+JSON.parse(
+JSON.stringify(
+creatures.find(
+c =>
+c.name ===
+gameData.starter
+)
+)
+);
+}
+document.getElementById(
+"output"
+).innerHTML =
+
+`
+<h2>
+Wild ${currentEnemy.name}
+</h2>
+
+<p>
+Type: ${currentEnemy.type}
+</p>
+
+<p>
+Enemy HP:
+${currentEnemy.hp}
+</p>
+
+<p>
+Your HP:
+${playerCreature.hp}
+</p>
+
+<button onclick="attack()">
+Attack
+</button>
+`;
+}
+    currentEnemy =
+    JSON.parse(
+        JSON.stringify(
+            creatures.find(
+                c => c.name === enemyName
+            )
+        )
+    );
+
+    showBattle();
+}
 function fight(name)
 {
     gameData.coins += 20;
