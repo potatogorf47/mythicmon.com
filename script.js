@@ -67,17 +67,18 @@ const creatures = [
 ];
 let gameData = {
 
-starter: null,
+    starter: null,
 
-coins: 100,
+    coins: 100,
 
-unlocked: [],
+    unlocked: [],
 
-collection: []
+    collection: []
+
 };
+
 let playerCreature = null;
 let currentEnemy = null;
-
 loadGame();
 
 function chooseStarter(name)
@@ -127,7 +128,20 @@ function loadGame()
 
     if(save)
     {
-        gameData = JSON.parse(save);
+        gameData =
+        JSON.parse(save);
+
+        if(gameData.starter)
+        {
+            playerCreature =
+            JSON.parse(
+                JSON.stringify(
+                    creatures.find(
+                        c => c.name === gameData.starter
+                    )
+                )
+            );
+        }
 
         document.getElementById(
             "starterSelection"
@@ -136,6 +150,8 @@ function loadGame()
         document.getElementById(
             "game"
         ).style.display = "block";
+
+        updateCoins();
     }
 }
 
