@@ -74,9 +74,9 @@ coins: 100,
 unlocked: [],
 
 collection: []
+};
 let playerCreature = null;
 let currentEnemy = null;
-};
 
 loadGame();
 
